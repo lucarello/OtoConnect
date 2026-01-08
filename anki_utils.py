@@ -1,5 +1,6 @@
 import requests
 import os
+import config_utils
 
 # AnkiConnect's HTTP server default IP Address
 ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
@@ -7,16 +8,23 @@ ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
 
 def get_notes():
     '''
-    Gets the Anki notes IDs in the "日本語::Main" deck
-    that contains no audio in "ExpressionAudio" field
+    Gets the Anki note IDs of notes that contain no
+    audio, based on the user deck and audio field
+    set in the config.json file.
     '''
+    # These variables are set here in case the content in config.json
+    # is updated, preventing the use of stale configuration.
+    config = config_utils.get_config()
+    deck = config.get('anki_deck')
+    audio_field = config.get('audio_field')
+    
     # The query uses Anki's search syntax
     # Quotes are used on the deck's name because of ::
     payload = {
         'action': 'findNotes',
         'version': 6,
         'params': {
-            'query':'deck:"日本語::Main" ExpressionAudio:'
+            'query': f'deck:{deck} {audio_field}:'
         }
     }
     
@@ -122,6 +130,11 @@ def update_audio(note_id, word):
     :param word: The word to which the audio is 
     assigned.
     '''
+    # These variables are set here in case the content in config.json
+    # is updated, preventing the use of stale configuration.
+    config = config_utils.get_config()
+    audio_field = config.get('audio_field')
+    
     payload = {
         'action': 'updateNoteFields',
         'version': 6,
@@ -130,7 +143,7 @@ def update_audio(note_id, word):
                 'id': note_id,
                 'fields': {
                     # Brackets are used since it's Anki's mandatory format.
-                    'ExpressionAudio': f'[sound:{word}.mp3]'
+                    audio_field: f'[sound:{word}.mp3]'
                 }
                     
             }

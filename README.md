@@ -1,61 +1,71 @@
-# OtoConnect
+# OtoConnect v1.1
 
-OtoConnect is a simple Python program designed to store audio and update Anki cards faster.
+OtoConnect is a simple Python program designed to store audio and update Anki notes faster.
 
-The script searches for notes that contain empty audio fields, automatically opens a web page to download (manually) the corresponding audio for the word.
+The script searches for notes that contain empty audio fields and automatically opens a web page (Forvo) so you can download the corresponding audio for the word.
 
-Since this program was made to help the creator, it has some self-personalized functionalities, which may (and probably will) cause problems during its execution. This is going to be updated in future versions.
+**Note:** This tool was originally developed for personal use. While functional, it may contain specific customizations or edge-case bugs. Feedback is welcome!
 
 ## Prerequisites
 
-This program requires the following assets installed:
+### Option 1: Using the executable (.exe)
+If you are using the `.exe` file, there are no technical prerequisites other than having your **Anki** app open while using the program.
+
+### Option 2: Running from Source
+If you prefer to run your script via Python (whether using a `.bat` file or not), ensure you have the following assets:
 
 - **Python 3.x**.
 - Updated **Anki** desktop app.
 - **AnkiConnect** Anki add-on (Code: `2055492159`).
 - Python `requests` library.
 
-## Configuration (Important!)
+## Configuration
 
-If you want to use this script for your own Anki decks, do the following:
+The script has a built-in **Configuration Wizard**.
 
-1. Open `anki_utils.py`.
-2. Locate the `get_notes()` function.
-3. In the `payload`, inside `params`, locate `query`.
-4. Change `'deck:"日本語::Main" ExpressionAudio:'` to `'deck:YOUR_DECK_NAME YOUR_AUDIO_FIELD_NAME:'`, following Anki's pattern.
-5. Locate `update_audio()` function.
-6. In the `payload`, inside `params`, then `note`, locate `fields`.
-7. Change `'ExpressionAudio'` to `'YOUR_AUDIO_FIELD_NAME'`.
-8. Save the changes.
-9. Open `main.py`.
-10. Locate the `main()` function.
-11. Locate `for note in note_info:`
-12. Locate `word = note['fields']['Expression']['value']`
-13. Change `'Expression'` inside the brackets to `'YOUR_WORD_FIELD'`.
-14. Save the changes.
+You can configure the Anki deck and the audio or word fields you want to use.
+
+When you first run the program and try to use it, the wizard will activate allowing you to set up:
+- Target Anki Deck
+- Field name for the Word (Source)
+- Field name for the Audio (Destination)
+
+**Tip:** If you are running the source code, avoid manually editing the `config.json` to prevent format errors. Use the built-in wizard.
+
+### Changing the Search URL (Source Code Only)
+By default, the program redirects to **Forvo** with the **Japanese** search tag enabled.
+This is currently hardcoded. If you are running from the source and want to change the language (e.g., to French or Spanish), do the following steps:
+
+1. Open `main.py` in your text editor.
+2. Search for the line
+```python 
+webbrowser.open_new_tab(f'https://forvo.com/word/{word}/#ja')
+```
+3. Change the language code from `#ja` to your preferred one.
+4. Save the changes and close `main.py`
+
+You may also want to change the website. To do so, you must change the line
+```python 
+'https://forvo.com/word/{word}/#ja'
+```
+to your preferred website.
+**NOTE:** Ensure `{word}` is still present in the code so you can correctly search for it.
 
 ## Usage
 
-### Creating a .bat
+1. Open the Anki app and ensure you are connected to the internet.
+2. Run OtoConnect and choose your mode:
+    - Use: to start the audio updating process.
+    - Configuration: to change the deck/field settings.
+3. The Workflow:
+    - OtoConnect will open the browser searching for the word.
+    - You *must* download the file **manually**.
+    - **Drag and drop** the file into the terminal window.
+    - Press **Enter**.
+    - The program will update the note and move to the next one.
+4. When there are no more notes with empty audio fields, the program will automatically close.
 
-To use this program, it's highly recommended for you to create a `.bat` file to run it.
-
-Create a `.bat` file, and, in a text editor, paste the following:
-
-```batch
-@echo off
-python "[YOUR_FOLDER_PATH]\main.py"
-pause
-```
-
-### Actually using it
-
-1. Open your Anki and be sure you're connected to the internet.
-2. Run the `main.py` file (or the `.bat` file).
-3. Download the audio at **Forvo** (the page will be automatically open).
-4. Drag the file to the terminal or write its path.
-5. Press **ENTER**.
-6. Repeat until all of your notes are successfully updated.
+**NOTE:** You should NOT close Anki while using OtoConnect. This may and will cause errors.
 
 ## LICENSE
 

@@ -1,5 +1,7 @@
 __pycache__/
 venv/
+dist/
 *.py[cod]
 .env
 .vscode/
+config.json
