@@ -5,3 +5,4 @@ dist/
 .env
 .vscode/
 config.json
+oto_connect_data.db

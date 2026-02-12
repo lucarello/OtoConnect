@@ -1,3 +1,4 @@
+from database_manager import DatabaseHandler
 import anki_utils
 import config_utils
 import webbrowser
@@ -32,11 +33,13 @@ def mode_selector():
         except Exception as e:
             print(f'An unexpected error occurred: {e}')
             return
-    
-    
 
 def main():
     print('--- Welcome to OtoConnect! ---\n')
+    
+    db = DatabaseHandler()
+    
+    db.table_setup()
     
     # Checks the using mode but also works as a control variable.
     mode = None
@@ -52,10 +55,9 @@ def main():
     # is updated, preventing the use of stale configuration.
     config = config_utils.get_config()            
     word_field = config.get('word_field')
-            
-    
     
     note_list = anki_utils.get_notes()
+    
     # Stops execution if AnkiConnect is unavailable or an error occurs.
     if note_list is None:
         return
@@ -68,9 +70,17 @@ def main():
     note_info = anki_utils.get_note_info(note_list)
     
     for note in note_info:
+        word = note['fields'][word_field]['value']
+        note_id = note['noteId']
+        
+        db.set_tuple(note_id, word)
+        
+    
+    for note in note_info:
         print('\n---------------------------')
         word = note['fields'][word_field]['value']
         print(f'Current Word: {word}')
+        print(f'')
         
         # Hardcoded to use Forvo and the Japanese search (#ja). The user may 
         # change the suffix or the entire URL if they find it necessary.
@@ -93,10 +103,18 @@ def main():
         
         print('Updating audio field on Anki...')
         anki_utils.update_audio(note['noteId'], word)
+        
+        audio_file_name = f'{word}.mp3'
+        
+        db.audio_update(audio_file_name, note['noteId'])
             
         print('Update complete!\n')
-        
+    
     print('All done! Every card without audio was updated!')
+    
+    db.end_connection()
+    
+    input("\nPress enter to end the program.")
 
 
 if __name__ == "__main__":

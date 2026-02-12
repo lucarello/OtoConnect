@@ -1,8 +1,10 @@
-# OtoConnect v1.1
+# OtoConnect v1.1.1
 
 OtoConnect is a simple Python program designed to store audio and update Anki notes faster.
 
 The script searches for notes that contain empty audio fields and automatically opens a web page (Forvo) so you can download the corresponding audio for the word.
+
+**Update 1.1.1:** The program now handles **local data persistence** by using a **SQLite database**. This feature is meant to be used for simple and predefined database queries in the future. It doesn't change the program usage flow.
 
 **Note:** This tool was originally developed for personal use. While functional, it may contain specific customizations or edge-case bugs. Feedback is welcome!
 
