@@ -1,6 +1,6 @@
 from database_manager import DatabaseHandler
 import anki_utils
-import config_utils
+from config_utils import Config, update_handler, update_config
 import webbrowser
 
 
@@ -34,8 +34,16 @@ def mode_selector():
             print(f'An unexpected error occurred: {e}')
             return
 
+
 def main():
     print('--- Welcome to OtoConnect! ---\n')
+    
+    config = Config()
+    
+    if not config.is_updated:
+        print('There is missing configuration in the config.json file!')
+        print('Beginning the configuration update...\n')
+        update_config(config, config.missing_options)
     
     db = DatabaseHandler()
     
@@ -49,28 +57,25 @@ def main():
         mode = mode_selector()
         
         if mode == 'update':
-            config_utils.update_handler()
-    
-    # These variables are set here in case the content in config.json
-    # is updated, preventing the use of stale configuration.
-    config = config_utils.get_config()            
-    word_field = config.get('word_field')
+            config_options = update_handler()
+            update_config(config, config_options)         
     
     note_list = anki_utils.get_notes()
     
     # Stops execution if AnkiConnect is unavailable or an error occurs.
-    if note_list is None:
-        return
+    '''if note_list is None:
+        return'''
     
     # Stops execution if there are no cards to process
     if not note_list:
         print('No note without audio was found')
+        input("\nPress enter to end the program.")
         return
     
     note_info = anki_utils.get_note_info(note_list)
     
     for note in note_info:
-        word = note['fields'][word_field]['value']
+        word = note['fields'][config.word_field]['value']
         note_id = note['noteId']
         
         db.set_tuple(note_id, word)
@@ -78,7 +83,7 @@ def main():
     
     for note in note_info:
         print('\n---------------------------')
-        word = note['fields'][word_field]['value']
+        word = note['fields'][config.word_field]['value']
         print(f'Current Word: {word}')
         print(f'')
         

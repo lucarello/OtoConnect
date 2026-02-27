@@ -1,10 +1,11 @@
-import requests
+import anki_client
 import os
+from config_utils import Config
 import config_utils
 
 # AnkiConnect's HTTP server default IP Address
-ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
 
+config = Config()
 
 def get_notes():
     '''
@@ -14,9 +15,6 @@ def get_notes():
     '''
     # These variables are set here in case the content in config.json
     # is updated, preventing the use of stale configuration.
-    config = config_utils.get_config()
-    deck = config.get('anki_deck')
-    audio_field = config.get('audio_field')
     
     # The query uses Anki's search syntax
     # Quotes are used on the deck's name because of ::
@@ -24,22 +22,16 @@ def get_notes():
         'action': 'findNotes',
         'version': 6,
         'params': {
-            'query': f'deck:{deck} {audio_field}:'
+            'query': f'deck:{config.deck} {config.audio_field}:'
         }
     }
     
-    try:
-        # The 'json=' argument automatically encodes the payload to JSON
-        response = requests.post(ANKI_CONNECT_URL, json=payload)
-        # The generated response is a dictionary which contains a "result" key.
-        return response.json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
-
+    result = None
+    
+    while result is None:
+        result = anki_client.send_request(payload)
+        
+    return result
 
 def get_note_info(note_list):
     '''
@@ -56,15 +48,12 @@ def get_note_info(note_list):
         }
     }
     
-    try:
-        response = requests.post(ANKI_CONNECT_URL, json=payload)
-        return response.json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    result = None
+    
+    while result is None:
+        result = anki_client.send_request(payload)
+    
+    return result
 
 
 def file_path_cleaner(raw_file_path):
@@ -110,15 +99,12 @@ def store_audio_file(file_path, word):
         }
     }
     
-    try:
-        response = requests.post(ANKI_CONNECT_URL, json=payload)
-        return response.json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    result = None
+    
+    while result is None:
+        result = anki_client.send_request(payload)
+        
+    return result
     
     
 def update_audio(note_id, word): 
@@ -132,8 +118,6 @@ def update_audio(note_id, word):
     '''
     # These variables are set here in case the content in config.json
     # is updated, preventing the use of stale configuration.
-    config = config_utils.get_config()
-    audio_field = config.get('audio_field')
     
     payload = {
         'action': 'updateNoteFields',
@@ -143,19 +127,16 @@ def update_audio(note_id, word):
                 'id': note_id,
                 'fields': {
                     # Brackets are used since it's Anki's mandatory format.
-                    audio_field: f'[sound:{word}.mp3]'
+                    config.audio_field: f'[sound:{word}.mp3]'
                 }
                     
             }
         }
     }
     
-    try:
-        response = requests.post(ANKI_CONNECT_URL, json=payload)
-        return response.json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    result = None
+    
+    while result is None:
+        result = anki_client.send_request(payload)
+    
+    return result

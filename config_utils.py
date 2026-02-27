@@ -1,9 +1,7 @@
-import requests
+import anki_client
 import json
 from enum import Flag, auto
 
-ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
-CONFIG_FILE = 'config.json'
 
 # Flag class to facilitate the configuration setup
 class Option(Flag):
@@ -13,47 +11,70 @@ class Option(Flag):
     WORD_FIELD = auto()
     ALL = DECK | AUDIO_FIELD | WORD_FIELD
     
-def get_config():
-    '''
-    Gets the current configuration in the config.json
-    file.
-    If it can't find the configuration file or its fields
-    are empty, it will generate an empty dictionary and 
-    call a function to properly create the config.json
-    '''
-    # Open the file and loads its content
-    try:
-        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-            config_data = json.load(f)
+class Config: 
+    def __init__(self, config_file = 'config.json'):
+        self._config_file = config_file
+        self._data = self._get_config()
+        self.is_updated, self.missing_options = self._check_config_state()
+        
+    def _get_config(self):
+        try:
+            with open(self._config_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            # Sets an empty dictionary to create the config.json file
+            return {}
     
-    except FileNotFoundError:
-        print(f"Error: The configuration file was not found!")
-        print(f'Creating a new configuration file')
+    def _save_config(self):
+        with open(self._config_file, 'w', encoding='utf-8') as f:
+            json.dump(self._data, f, indent=4, ensure_ascii=False)
+            
+    def _check_config_state(self):
+        options = Option.NONE
         
-        # Sets an empty dictionary to create the config.json file
-        config_data = {}
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+        if not self.deck:
+            options |= Option.DECK
+            
+        if not self.audio_field:
+            options |= Option.AUDIO_FIELD
+            
+        if not self.word_field:
+            options |= Option.WORD_FIELD
+        
+        if options != Option.NONE:
+            return False, options
+        
+        return True, None
     
-    # This block determines which options should the update_config() 
-    # function update
-    options = Option.NONE
-    if not config_data.get('anki_deck'):
-        options |= Option.DECK
+    @property
+    def deck(self):
+        return self._data.get('anki_deck')
     
-    if not config_data.get('audio_field'):
-        options |= Option.AUDIO_FIELD
+    @deck.setter
+    def deck(self, value):
+        self._data['anki_deck'] = value
         
-    if not config_data.get('word_field'):
-        options |= Option.WORD_FIELD
+        self._save_config()
+    
+    @property
+    def audio_field(self):
+        return self._data.get('audio_field')
+    
+    @audio_field.setter
+    def audio_field(self, value):
+        self._data['audio_field'] = value
         
-    if options != Option.NONE:
-        # the "_" ignores the boolean return value that checks
-        # if the update is finished
-        config_data, _ = update_config(config_data, options)
+        self._save_config()
+    
+    @property
+    def word_field(self):
+        return self._data.get('word_field')
+    
+    @word_field.setter
+    def word_field(self, value):
+        self._data['word_field'] = value
         
-    return config_data
+        self._save_config()
 
 
 def update_handler():
@@ -64,12 +85,10 @@ def update_handler():
     '''
     print('--- Configuration Update Wizard ---')
     
-    config_data = get_config()
-    
     # Checks if the configuration update is finished
-    is_finished = False
+    options = None
     
-    while is_finished == False:
+    while options is None:
         print('Select one of the following options:\n')
         print('[1] Update Deck')
         print('[2] Update Audio Field')
@@ -79,7 +98,6 @@ def update_handler():
         
         # Stores a Option class value to mitigate possible error 
         # while performing bitwise operations
-        options = Option.NONE
         
         try:
             choice = int(input('Option: '))
@@ -99,13 +117,11 @@ def update_handler():
         except Exception as e:
             print(f'An unexpected error occurred: {e}')
             return
-        
-        config_data, is_finished = update_config(config_data, options)
     
-    return
+    return options
             
 
-def update_config(config_data, config_options = Option.NONE): 
+def update_config(config_instance, config_options = Option.NONE): 
     '''
     Defines user configuration in the config.json
     file. 
@@ -117,13 +133,13 @@ def update_config(config_data, config_options = Option.NONE):
     the program will use to define user configuration.
     '''
     
-    # Returning True here means that the update is finished
+    # NONE means that the update is finished
     if config_options == Option.NONE: 
-        return config_data, True
+        return
     
     if Option.DECK in config_options:
-        deck = select_deck()
-        config_data['anki_deck'] = deck
+        new_deck = select_deck()
+        config_instance.deck = new_deck
         
     # Checks if the config_options variable contains either audio or word
     # field flags, preventing the necessity of selecting the model twice.
@@ -131,24 +147,14 @@ def update_config(config_data, config_options = Option.NONE):
         model = select_model()
         
     if Option.AUDIO_FIELD in config_options:
-        audio_field = select_field(model, 'audio')
-        config_data['audio_field'] = audio_field
+        new_audio_field = select_field(model, 'audio')
+        config_instance.audio_field = new_audio_field
         
     if Option.WORD_FIELD in config_options:
-        word_field = select_field(model, 'word')
-        config_data['word_field'] = word_field
+        new_word_field = select_field(model, 'word')
+        config_instance.word_field = new_word_field
     
-    try:
-        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump(config_data, f, indent=4, ensure_ascii=False)
-            # Returns False so the user continues in the Update screen
-            # after finishing an update 
-            return config_data, False
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        # In case an error occurs, the user can still try to
-        # update their configuration.
-        return config_data, False
+    return True
 
 
 def item_selection(item_list, prompt_word):
@@ -205,14 +211,10 @@ def select_deck():
         "version": 6
     }
     
-    try:
-        deck_list = requests.post(ANKI_CONNECT_URL, json=payload).json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    deck_list = None
+    
+    while deck_list is None:
+        deck_list = anki_client.send_request(payload)
     
     selected_deck = item_selection(deck_list, 'deck')
     return selected_deck
@@ -228,15 +230,11 @@ def select_model():
         'action': 'modelNames',
         'version': 6
     }
+
+    model_list = None
     
-    try:
-        model_list = requests.post(ANKI_CONNECT_URL, json=payload).json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    while model_list is None:
+        model_list = anki_client.send_request(payload)
     
     selected_model = item_selection(model_list, 'model')
     return selected_model
@@ -262,14 +260,10 @@ def select_field(model, type):
         }
     }
     
-    try:
-        field_list = requests.post(ANKI_CONNECT_URL, json=payload).json()['result']
-    except requests.exceptions.ConnectionError:
-        print(f'Connection Error: Check if Anki is open at {ANKI_CONNECT_URL}')
-        return
-    except Exception as e:
-        print(f'An unexpected error occurred: {e}')
-        return
+    field_list = None
+    
+    while field_list is None:
+        field_list = anki_client.send_request(payload)
     
     if type == 'audio':
         selected_audio_field = item_selection(field_list, 'audio field')
