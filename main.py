@@ -22,7 +22,7 @@ def populate_database(database_instance: DatabaseHandler,
     note_list = anki_utils.get_notes(config_instance)
     
     if not note_list:
-        return
+        return None
     
     note_info = anki_utils.get_note_info(note_list)
     
@@ -45,10 +45,13 @@ def mode_selector() -> Mode:
         
         choice = get_choice(1, 3)
     
-    match choice:
-        case 1: return Mode.USE
-        case 2: return Mode.CONFIGURATION
-        case 3: return Mode.DATABASE
+    options = {
+        1: Mode.USE,
+        2: Mode.CONFIGURATION,
+        3: Mode.DATABASE
+    }
+    
+    return options.get(choice)
 
 def main() -> None:
     print('--- Welcome to OtoConnect! ---\n')
@@ -92,6 +95,13 @@ def main() -> None:
     word_list = db.get_loop_list()
     
     word_count = len(word_list)
+    
+    if word_count == 0:
+        print('No note without audio was found!')
+        input("\nPress Enter to end the program.")
+        
+        db.end_connection()
+        return None
 
     for i, note in enumerate(word_list, 1):
         print('\n---------------------------')

@@ -1,4 +1,11 @@
+"""
+Contains user input related functions that gives support to other modules.
+"""
+
 def get_choice(min_choice: int, max_choice: int) -> int | None:
+    """
+    Gets user choice, ensuring it is an integer between 2 values.
+    """
     try:
         choice = int(input('Option: '))
         

@@ -28,12 +28,7 @@ def get_notes(config_instance: Config) -> list[int]:
         }
     }
     
-    result = None
-    
-    while result is None:
-        result = send_request(payload)
-        
-    return result
+    return send_request(payload)
 
 
 def get_note_info(note_list: list[int]) -> list[dict[str, Any]]:
@@ -51,12 +46,7 @@ def get_note_info(note_list: list[int]) -> list[dict[str, Any]]:
         }
     }
     
-    result = None
-    
-    while result is None:
-        result = send_request(payload)
-    
-    return result
+    return send_request(payload)
 
 
 def file_path_cleaner(raw_file_path: str) -> str:
@@ -102,17 +92,12 @@ def store_audio_file(file_path: str, word: str) -> Any | None:
         }
     }
     
-    result = None
-    
-    while result is None:
-        result = send_request(payload)    
-
-    return result
+    return send_request(payload)    
     
     
 def update_audio(config_instance: Config, 
                  note_id: int, 
-                 word: str) -> Any | None:
+                 word: str) -> None:
     """
     Updates the audio field in the Anki note.
     
@@ -139,9 +124,4 @@ def update_audio(config_instance: Config,
         }
     }
     
-    result = None
-    
-    while result is None:
-        result = send_request(payload)
-    
-    return result
+    send_request(payload)

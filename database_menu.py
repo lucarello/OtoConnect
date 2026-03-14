@@ -27,14 +27,20 @@ def query_handler() -> tuple[QueryOption, QueryFilter] | None:
         choice = get_choice(1, 3)
         
         if choice is not None:
-            match choice:
-                case 1: option = QueryOption.WORD
-                case 2: option = QueryOption.WORD_COUNT
-                case 3: return None
+            choice_map = {
+                1: QueryOption.WORD,
+                2: QueryOption.WORD_COUNT,
+                3: None
+            }
+            option = choice_map.get(choice)
+            
+            if option is None:
+                return None
                 
             filters = select_query_filter()
             
             if filters is None:
+                # Keeps the loop running if the user exits filter selection.
                 choice = None
 
     return option, filters
@@ -51,14 +57,15 @@ def select_query_filter() -> QueryFilter | None:
         print('[4] Exit\n')
         
         choice = get_choice(1, 4)
-        
-    match choice:
-        case 1: option = QueryFilter.ALL
-        case 2: option = QueryFilter.AUDIOLESS
-        case 3: option = QueryFilter.UPDATED
-        case 4: return None
+    
+    choice_map = {
+        1: QueryFilter.ALL,
+        2: QueryFilter.AUDIOLESS,
+        3: QueryFilter.UPDATED,
+        4: None
+    }
             
-    return option
+    return choice_map.get(choice)
 
 
 def show_query_results(database_instance: DatabaseHandler, 

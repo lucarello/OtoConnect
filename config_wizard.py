@@ -29,14 +29,15 @@ def update_handler() -> ConfigOption | None:
         
         choice = get_choice(1, 5)
     
-    match choice:
-        case 1: options = ConfigOption.DECK
-        case 2: options = ConfigOption.AUDIO_FIELD
-        case 3: options = ConfigOption.WORD_FIELD
-        case 4: options = ConfigOption.ALL
-        case 5: return
+    choice_map = {
+        1: ConfigOption.DECK,
+        2: ConfigOption.AUDIO_FIELD,
+        3: ConfigOption.WORD_FIELD,
+        4: ConfigOption.ALL,
+        5: None
+    }
     
-    return options
+    return choice_map.get(choice)
 
 
 def update_config(config_instance: Config, config_options: ConfigOption) -> None: 
@@ -110,10 +111,7 @@ def select_deck() -> str | None:
         "version": 6
     }
     
-    deck_list = None
-    
-    while deck_list is None:
-        deck_list = send_request(payload)
+    deck_list = send_request(payload)
     
     selected_deck = item_selection(deck_list, 'deck')
     return selected_deck
@@ -130,10 +128,7 @@ def select_model() -> str | None:
         'version': 6
     }
 
-    model_list = None
-    
-    while model_list is None:
-        model_list = send_request(payload)
+    model_list = send_request(payload)
     
     selected_model = item_selection(model_list, 'model')
     
@@ -161,14 +156,12 @@ def select_field(model: str, select_mode: str) -> str | None:
         }
     }
     
-    field_list = None
-    
-    while field_list is None:
-        field_list = send_request(payload)
+    field_list = send_request(payload)
     
     if select_mode == 'audio':
-        selected_audio_field = item_selection(field_list, 'audio field')
-        return selected_audio_field
+        selected_field = item_selection(field_list, 'audio field')
+        
     if select_mode == 'word':
-        selected_word_field = item_selection(field_list, 'word field')
-        return selected_word_field
+        selected_field = item_selection(field_list, 'word field')
+        
+    return selected_field
