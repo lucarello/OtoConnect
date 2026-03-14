@@ -1,29 +1,54 @@
-from database_manager import DatabaseHandler
-import anki_utils
-from config_utils import Config, update_handler, update_config
+"""Main module that executes the main use loop."""
+
 import webbrowser
+from enum import Enum, auto
+
+import anki_utils
+from database_manager import DatabaseHandler
+from database_menu import query_handler
+from config_manager import Config
+from config_wizard import update_handler, update_config
 
 
-def mode_selector():
-    '''
+class Mode(Enum):
+    USE = auto()
+    CONFIGURATION = auto()
+    DATABASE = auto()
+
+
+def populate_database(database_instance: DatabaseHandler, 
+                      config_instance: Config) -> None:
+    note_list = anki_utils.get_notes(config_instance)
+    
+    if not note_list:
+        return
+    
+    note_info = anki_utils.get_note_info(note_list)
+    
+    database_instance.update_table(note_info)
+
+def mode_selector() -> Mode | None:
+    """
     Generates a prompt that allows the user to 
     select if they want to use the program for 
     its purpose or configure it.
-    '''
+    """
     # Control variable that checks if the user selected a mode.
     mode_selected = False
-    while mode_selected == False:
+    while not mode_selected:
         try:
             print('Please, choose a mode between the following\n')
             print('[1] Use Mode')
-            print('[2] Configuration Mode\n')
+            print('[2] Configuration Mode')
+            print('[3] Data Mode\n')
             
             choice = int(input('Option: '))
             
             # Match was chosen over nested ifs to make the code cleaner.
             match choice:
-                case 1: return 'use'
-                case 2: return 'update'
+                case 1: return Mode.USE
+                case 2: return Mode.CONFIGURATION
+                case 3: return Mode.DATABASE
                 case _: print('You must enter a valid number!')
                     
         except ValueError:
@@ -34,8 +59,7 @@ def mode_selector():
             print(f'An unexpected error occurred: {e}')
             return
 
-
-def main():
+def main() -> None:
     print('--- Welcome to OtoConnect! ---\n')
     
     config = Config()
@@ -45,47 +69,38 @@ def main():
         print('Beginning the configuration update...\n')
         update_config(config, config.missing_options)
     
-    db = DatabaseHandler()
+    db = DatabaseHandler(config)
     
     db.table_setup()
+    
+    populate_database(db, config)
     
     # Checks the using mode but also works as a control variable.
     mode = None
     
     # Only stops to ask when the user decides to update their notes audio.
-    while mode != 'use':    
+    while mode != Mode.USE:    
         mode = mode_selector()
         
-        if mode == 'update':
+        if mode == Mode.CONFIGURATION:
             config_options = update_handler()
-            update_config(config, config_options)         
+            
+            if config_options:
+                update_config(config, config_options)
+            
+                populate_database(db, config)
+                
+        elif mode == Mode.DATABASE:
+            query_handler(db)
     
-    note_list = anki_utils.get_notes()
+    word_list = db.get_loop_list()
     
-    # Stops execution if AnkiConnect is unavailable or an error occurs.
-    '''if note_list is None:
-        return'''
-    
-    # Stops execution if there are no cards to process
-    if not note_list:
-        print('No note without audio was found')
-        input("\nPress enter to end the program.")
-        return
-    
-    note_info = anki_utils.get_note_info(note_list)
-    
-    for note in note_info:
-        word = note['fields'][config.word_field]['value']
-        note_id = note['noteId']
-        
-        db.set_tuple(note_id, word)
-        
-    
-    for note in note_info:
+    word_count = len(word_list)
+
+    for i, note in enumerate(word_list, 1):
         print('\n---------------------------')
-        word = note['fields'][config.word_field]['value']
-        print(f'Current Word: {word}')
-        print(f'')
+        note_id, word = note
+        print(f'Current Word: {word} ({i}/{word_count})\n') #x = current word. y = word_count
         
         # Hardcoded to use Forvo and the Japanese search (#ja). The user may 
         # change the suffix or the entire URL if they find it necessary.
@@ -107,11 +122,11 @@ def main():
                 storage_result = anki_utils.store_audio_file(file_path, word)
         
         print('Updating audio field on Anki...')
-        anki_utils.update_audio(note['noteId'], word)
+        anki_utils.update_audio(config, note_id, word)
         
         audio_file_name = f'{word}.mp3'
         
-        db.audio_update(audio_file_name, note['noteId'])
+        db.update_entry(audio_file_name, note_id)
             
         print('Update complete!\n')
     
@@ -119,8 +134,7 @@ def main():
     
     db.end_connection()
     
-    input("\nPress enter to end the program.")
-
+    input("\nPress Enter to end the program.")
 
 if __name__ == "__main__":
     main()
