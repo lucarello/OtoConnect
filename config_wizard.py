@@ -3,7 +3,8 @@ Manages user configuration updates, allowing customization of decks and
 audio and word fields.
 """
 
-import anki_client
+from anki_client import send_request
+from input_handler import get_choice
 from config_manager import ConfigOption, Config
 
 
@@ -16,9 +17,9 @@ def update_handler() -> ConfigOption | None:
     print('--- Configuration Update Wizard ---')
     
     # Checks if the configuration update is finished
-    options = None
+    choice = None
     
-    while options is None:
+    while choice is None:
         print('Select one of the following options:\n')
         print('[1] Update Deck')
         print('[2] Update Audio Field')
@@ -26,27 +27,14 @@ def update_handler() -> ConfigOption | None:
         print('[4] Update All')
         print('[5] Exit\n')
         
-        # Stores a Option class value to mitigate possible error 
-        # while performing bitwise operations
-        
-        try:
-            choice = int(input('Option: '))
-            
-            # Since there are 6 possibilities, match is being used over 
-            # nested ifs
-            match choice:
-                case 1: options = ConfigOption.DECK
-                case 2: options = ConfigOption.AUDIO_FIELD
-                case 3: options = ConfigOption.WORD_FIELD
-                case 4: options = ConfigOption.ALL
-                case 5: return
-                case _: print('You must enter a valid number!\n')
-                
-        except ValueError:
-            print('You must enter a valid number!\n')
-        except Exception as e:
-            print(f'An unexpected error occurred: {e}\n')
-            return
+        choice = get_choice(1, 5)
+    
+    match choice:
+        case 1: options = ConfigOption.DECK
+        case 2: options = ConfigOption.AUDIO_FIELD
+        case 3: options = ConfigOption.WORD_FIELD
+        case 4: options = ConfigOption.ALL
+        case 5: return
     
     return options
 
@@ -101,29 +89,14 @@ def item_selection(item_list: list[str], prompt_word: str) -> str | None:
         print(f'[{index + 1}]     {item}')
     
     # The selected item. Works as a control variable.
-    selection = None
+    choice = None
     
-    while selection is None:
-        # Stores the user input before turning it into an integer.
-        choice = (input(f'Insert the number of the {prompt_word} you want to use: '))
+    while choice is None:        
+        choice = get_choice(1, len(item_list))
         
-        try:
-            # Since index of a list begins at 0, subtracts one from the choice, 
-            # that was adjusted to become user-friendly.
-            index = int(choice) - 1   
-            
-            if 0 <= index < len(item_list):
-                selection = item_list[index]
-            else:
-                print('Please, enter a valid number')
-            
-        except ValueError:
-            print('\nYou must enter a valid number!\n')
-        except Exception as e:
-            print(f'An unexpected error occurred: {e}')
-            return
+    index = choice - 1
     
-    return selection
+    return item_list[index]
 
 
 def select_deck() -> str | None:
@@ -140,7 +113,7 @@ def select_deck() -> str | None:
     deck_list = None
     
     while deck_list is None:
-        deck_list = anki_client.send_request(payload)
+        deck_list = send_request(payload)
     
     selected_deck = item_selection(deck_list, 'deck')
     return selected_deck
@@ -160,7 +133,7 @@ def select_model() -> str | None:
     model_list = None
     
     while model_list is None:
-        model_list = anki_client.send_request(payload)
+        model_list = send_request(payload)
     
     selected_model = item_selection(model_list, 'model')
     
@@ -191,7 +164,7 @@ def select_field(model: str, select_mode: str) -> str | None:
     field_list = None
     
     while field_list is None:
-        field_list = anki_client.send_request(payload)
+        field_list = send_request(payload)
     
     if select_mode == 'audio':
         selected_audio_field = item_selection(field_list, 'audio field')

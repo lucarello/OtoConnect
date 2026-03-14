@@ -11,7 +11,7 @@ from requests import post
 ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
 
 
-def send_request(payload : dict[str, Any]) -> Any | None:
+def send_request(payload: dict[str, Any]) -> Any | None:
     try:
         # The 'json=' argument automatically encodes the payload to JSON
         response = post(ANKI_CONNECT_URL, json=payload)

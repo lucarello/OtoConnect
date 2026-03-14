@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 from tabulate import tabulate
 
+from input_handler import get_choice
 from database_manager import QueryFilter, DatabaseHandler
 
 
@@ -12,40 +13,57 @@ class QueryOption(Enum):
     WORD_COUNT = auto()
 
 
-def query_handler(database_instance: DatabaseHandler) -> None:
+def query_handler() -> tuple[QueryOption, QueryFilter] | None:
     print('--- Database Queries ---\n')
     
-    option = None
+    choice = None 
     
-    while option is None:
+    while choice is None:
         print('Select one of the following options:\n')
         print('[1] Word Query')
         print('[2] Word Count Query')
         print('[3] Exit\n')
         
-        try:
-            choice = int(input('Option: '))
-
+        choice = get_choice(1, 3)
+        
+        if choice is not None:
             match choice:
                 case 1: option = QueryOption.WORD
                 case 2: option = QueryOption.WORD_COUNT
-                case 3: return
-                case _: 
-                    print('You must enter a valid number!\n')
-                    continue
+                case 3: return None
+                
+            filters = select_query_filter()
             
-        except ValueError:
-            print('You must enter a valid number!\n')
-            continue
-        except Exception as e:
-            print(f'An unexpected error occurred: {e}\n')
-            continue
-            
-        filters = select_query_filter()
-        
-        if filters is None:
-            option = None
+            if filters is None:
+                choice = None
+
+    return option, filters
     
+            
+def select_query_filter() -> QueryFilter | None:
+    choice = None
+    
+    while choice is None:
+        print('Select the kind of words you want to search for:\n')
+        print('[1] All Words')
+        print('[2] Audioless Words')
+        print('[3] Updated Words')
+        print('[4] Exit\n')
+        
+        choice = get_choice(1, 4)
+        
+    match choice:
+        case 1: option = QueryFilter.ALL
+        case 2: option = QueryFilter.AUDIOLESS
+        case 3: option = QueryFilter.UPDATED
+        case 4: return None
+            
+    return option
+
+
+def show_query_results(database_instance: DatabaseHandler, 
+                       option: QueryOption,
+                       filters: QueryFilter) -> None:
     if option == QueryOption.WORD:
         word_list = database_instance.get_word_list(filters)
         
@@ -55,34 +73,6 @@ def query_handler(database_instance: DatabaseHandler) -> None:
     else:
         word_count = database_instance.get_word_count(filters)
         
-        print(f'There are {word_count} entries matching this filters in the database\n')
+        print(f'There are {word_count} entries matching these filters in the database\n')
         
     input("Press Enter to continue.")
-
-            
-def select_query_filter() -> QueryFilter | None:
-    option = None
-    
-    while option is None:
-        print('Select the kind of words you want to search for:\n')
-        print('[1] All Words')
-        print('[2] Audioless Words')
-        print('[3] Updated Words')
-        print('[4] Exit\n')
-        
-        try:
-            choice = int(input('Option: '))
-            
-            match choice:
-                case 1: option = QueryFilter.ALL
-                case 2: option = QueryFilter.AUDIOLESS
-                case 3: option = QueryFilter.UPDATED
-                case 4: return None
-                case _: print('You must enter a valid number!\n')
-        
-        except ValueError:
-            print('You must enter a valid number!\n')
-        except Exception as e:
-            print(f'An unexpected error occurred: {e}\n')
-            
-    return option

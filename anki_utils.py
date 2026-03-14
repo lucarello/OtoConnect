@@ -5,7 +5,7 @@ Contains various functions that collect and manage data from Anki.
 import os
 from typing import Any
 
-import anki_client
+from anki_client import send_request
 from config_manager import Config
 
 
@@ -31,7 +31,7 @@ def get_notes(config_instance: Config) -> list[int]:
     result = None
     
     while result is None:
-        result = anki_client.send_request(payload)
+        result = send_request(payload)
         
     return result
 
@@ -54,7 +54,7 @@ def get_note_info(note_list: list[int]) -> list[dict[str, Any]]:
     result = None
     
     while result is None:
-        result = anki_client.send_request(payload)
+        result = send_request(payload)
     
     return result
 
@@ -91,7 +91,7 @@ def store_audio_file(file_path: str, word: str) -> Any | None:
     """
     if not os.path.exists(file_path):
         print(f'Error: No such file as "{file_path}" was found.\n')
-        return
+        return None
     
     payload = {
         'action': 'storeMediaFile',
@@ -105,7 +105,7 @@ def store_audio_file(file_path: str, word: str) -> Any | None:
     result = None
     
     while result is None:
-        result = anki_client.send_request(payload)    
+        result = send_request(payload)    
 
     return result
     
@@ -142,6 +142,6 @@ def update_audio(config_instance: Config,
     result = None
     
     while result is None:
-        result = anki_client.send_request(payload)
+        result = send_request(payload)
     
     return result

@@ -8,8 +8,6 @@ The script searches for notes with empty audio fields and automatically opens a 
 
 **Note:** This tool was originally designed for personal use. While functional, it may contain specific customizations or edge-case bugs. Feedback is welcome!
 
-**New in 1.1.3:** Simple **SQLite** database queries were implemented, allowing the user to check stored data about their Anki notes. Also, the code became more modular, optimizing it.
-
 ## Features
 
 - Automatic SQLite database initialization.

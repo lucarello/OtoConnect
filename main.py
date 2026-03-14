@@ -4,8 +4,9 @@ import webbrowser
 from enum import Enum, auto
 
 import anki_utils
+from input_handler import get_choice
 from database_manager import DatabaseHandler
-from database_menu import query_handler
+from database_menu import query_handler, show_query_results
 from config_manager import Config
 from config_wizard import update_handler, update_config
 
@@ -27,37 +28,27 @@ def populate_database(database_instance: DatabaseHandler,
     
     database_instance.update_table(note_info)
 
-def mode_selector() -> Mode | None:
+def mode_selector() -> Mode:
     """
     Generates a prompt that allows the user to 
     select if they want to use the program for 
     its purpose or configure it.
     """
     # Control variable that checks if the user selected a mode.
-    mode_selected = False
-    while not mode_selected:
-        try:
-            print('Please, choose a mode between the following\n')
-            print('[1] Use Mode')
-            print('[2] Configuration Mode')
-            print('[3] Data Mode\n')
-            
-            choice = int(input('Option: '))
-            
-            # Match was chosen over nested ifs to make the code cleaner.
-            match choice:
-                case 1: return Mode.USE
-                case 2: return Mode.CONFIGURATION
-                case 3: return Mode.DATABASE
-                case _: print('You must enter a valid number!')
-                    
-        except ValueError:
-            # There is no return here, so the loop continues even if data like
-            # strings are entered by the user.
-            print('You must enter a valid number!')
-        except Exception as e:
-            print(f'An unexpected error occurred: {e}')
-            return
+    choice = None
+    
+    while choice is None:
+        print('Please, choose a mode between the following\n')
+        print('[1] Use Mode')
+        print('[2] Configuration Mode')
+        print('[3] Data Mode\n')
+        
+        choice = get_choice(1, 3)
+    
+    match choice:
+        case 1: return Mode.USE
+        case 2: return Mode.CONFIGURATION
+        case 3: return Mode.DATABASE
 
 def main() -> None:
     print('--- Welcome to OtoConnect! ---\n')
@@ -91,7 +82,12 @@ def main() -> None:
                 populate_database(db, config)
                 
         elif mode == Mode.DATABASE:
-            query_handler(db)
+            query_data = query_handler()
+            
+            if query_data is not None:
+                option, filters = query_data
+                
+                show_query_results(db, option, filters)
     
     word_list = db.get_loop_list()
     
