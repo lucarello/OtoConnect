@@ -1,20 +1,55 @@
 """Main module that executes the main use loop."""
 
+import os
+import subprocess
 import webbrowser
 from enum import Enum, auto
 
 import anki_utils
-from input_handler import get_choice
+from input_handler import get_choice, clean_file_path
 from database_manager import DatabaseHandler
 from database_menu import query_handler, show_query_results
 from config_manager import Config
-from config_wizard import update_handler, update_config
+from config_wizard import update_handler, update_config, get_anki_path
 
 
 class Mode(Enum):
     USE = auto()
     CONFIGURATION = auto()
     DATABASE = auto()
+
+
+def get_anki_startup():
+    """
+    Gets user preference in whether or not to open Anki
+    during OtoConnect startup.
+    """
+    choice = None
+    
+    while choice is None:
+        print('Would you like to open Anki on OtoConnect startup?\n')
+        print('[1] Yes')
+        print('[2] No\n')
+        
+        choice = get_choice(1, 2)
+        
+    choice_map = {
+        1: True,
+        2: False
+    }
+    
+    return choice_map.get(choice)
+    
+
+def run_anki(config_instance: Config) -> None:
+    """
+    Launches the Anki application asynchronously.
+    """
+    anki_dir = os.path.dirname(config_instance.anki_path)
+    
+    subprocess.Popen(['start', config_instance.anki_path],
+                     cwd=anki_dir,
+                     shell=True)
 
 
 def populate_database(database_instance: DatabaseHandler, 
@@ -45,18 +80,32 @@ def mode_selector() -> Mode:
         
         choice = get_choice(1, 3)
     
-    options = {
+    choice_map = {
         1: Mode.USE,
         2: Mode.CONFIGURATION,
         3: Mode.DATABASE
     }
     
-    return options.get(choice)
+    return choice_map.get(choice)
 
 def main() -> None:
     print('--- Welcome to OtoConnect! ---\n')
     
     config = Config()
+    
+    if config.first_time:    
+        config.startup_anki = get_anki_startup()
+        
+        config.first_time = False 
+    
+    if config.startup_anki:
+        if not config.anki_path:
+            print('The anki file path is missing!\n')
+            
+            path = get_anki_path()
+            config.anki_path = path  
+        
+        run_anki(config)
     
     if not config.is_updated:
         print('There is missing configuration in the config.json file!')
@@ -117,7 +166,7 @@ def main() -> None:
         # The loop continues until the file is successfully stored
         while storage_result is None:
             raw_path = input("Enter the audio file path or drag the file into the terminal: ")
-            file_path = anki_utils.file_path_cleaner(raw_path)
+            file_path = clean_file_path(raw_path)
             
             if not file_path:
                 print('The file path cannot be empty\n')

@@ -26,6 +26,36 @@ class Config:
         self.is_updated, self.missing_options = self._check_config_state()
     
     @property
+    def first_time(self) -> bool:
+        return self._data.get('first_time', True)
+    
+    @first_time.setter
+    def first_time(self, value: bool) -> None:
+        self._data['first_time'] = value
+        
+        self._save_config()
+        
+    @property
+    def startup_anki(self) -> bool | None:
+        return self._data.get('startup_anki')
+    
+    @startup_anki.setter
+    def startup_anki(self, value: bool) -> None:
+        self._data['startup_anki'] = value
+        
+        self._save_config()
+    
+    @property
+    def anki_path(self) -> str | None:
+        return self._data.get('anki_path')
+    
+    @anki_path.setter
+    def anki_path(self, value: str) -> None:
+        self._data['anki_path'] = value
+        
+        self._save_config()
+    
+    @property
     def deck(self) -> str | None:
         return self._data.get('anki_deck')
     

@@ -4,7 +4,7 @@ audio and word fields.
 """
 
 from anki_client import send_request
-from input_handler import get_choice
+from input_handler import get_choice, clean_file_path, validate_path
 from config_manager import ConfigOption, Config
 
 
@@ -165,3 +165,21 @@ def select_field(model: str, select_mode: str) -> str | None:
         selected_field = item_selection(field_list, 'word field')
         
     return selected_field
+
+
+def get_anki_path() -> str:
+    """
+    Prompts the user for the Anki executable path.
+    
+    The user can either type the path directly or drag and drop
+    the executable file into the terminal.
+    """
+    is_path_valid = False
+    
+    while not is_path_valid:
+        raw_path = input('Please enter your Anki file path: ')
+        clean_path = clean_file_path(raw_path)
+        
+        is_path_valid = validate_path(clean_path)
+    
+    return clean_path

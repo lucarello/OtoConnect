@@ -49,27 +49,6 @@ def get_note_info(note_list: list[int]) -> list[dict[str, Any]]:
     return send_request(payload)
 
 
-def file_path_cleaner(raw_file_path: str) -> str:
-    """
-    Cleans a file path name, eliminating empty
-    spaces and quotes ('' or "") which can be
-    automatically added by the terminal.
-    
-    :param raw_file_path: File path with possible
-    quotes or empty spaces surrounding it.
-    """
-    clean_file_path = raw_file_path.strip()
-     
-    # "startswith" and "endswith" were preferred, since folders and 
-    # files names may contain quotes.
-    if clean_file_path.startswith('"') and clean_file_path.endswith('"'):
-        clean_file_path = clean_file_path[1:-1]
-    elif clean_file_path.startswith("'") and clean_file_path.endswith("'"):
-        clean_file_path = clean_file_path[1:-1]
-    
-    return clean_file_path
-
-
 def store_audio_file(file_path: str, word: str) -> Any | None:
     """
     Copies an audio file to Anki's media folder and

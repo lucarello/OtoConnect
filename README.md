@@ -11,6 +11,7 @@ The script searches for notes with empty audio fields and automatically opens a 
 ## Features
 
 - Automatic SQLite database initialization.
+- Automatic Anki app initialization.
 - Integration with Anki through AnkiConnect API.
 - HTTP-based communication with Anki.
 - Assisted audio download and storage workflow.
@@ -23,7 +24,7 @@ The script searches for notes with empty audio fields and automatically opens a 
 If you are using the `.exe` file, there are no technical requirements other than having your **Anki** app open while using the program.
 
 ### Option 2: Running from Source
-If you prefer to run your script via Python (whether using a `.bat` file or not), ensure you have the following assets:
+If you prefer to run your script via Python (whether using a `.bat` file or not), ensure you have the following dependencies:
 
 - **Python 3.x**.
 - Updated **Anki** desktop app.
@@ -33,7 +34,7 @@ If you prefer to run your script via Python (whether using a `.bat` file or not)
 
 ## Installation
 
-**Note 1:** The first two steps consider you are a source-code user. If you are using the `.exe` file, you may skip them.
+**Note 1:** The first two steps assume you are running from source. If you are using the `.exe` file, you may skip them.
 
 1. Cloning the repository:
 Open **Git Bash** in the desired folder and run the following command:
@@ -42,7 +43,7 @@ git clone https://github.com/lucarello/OtoConnect.git
 ```
 
 2. Installing library dependencies:
-Open your **Command Terminal** in the cloned repository folder and run the following command:
+Open your **Command Prompt or Terminal** in the cloned repository folder and run the following command:
 ```python
 pip install -r requirements.txt
 ```
@@ -60,11 +61,16 @@ pip install -r requirements.txt
 
 ## Configuration
 
+### Anki Startup
+When first running the program, it will ask if the user wants to open Anki during OtoConnect startup.
+
+### Anki Configuration
+
 The script has a built-in **Configuration Wizard**.
 
-You can configure the Anki deck and the audio or word fields you want to use.
+The user can configure the Anki deck and the audio or word fields they want to use.
 
-When you first run the program and try to use it, the wizard will activate allowing you to set up:
+When running the program for the first time, the wizard will activate allowing you to set up:
 - Target Anki Deck.
 - Field name for the Word (Source).
 - Field name for the Audio (Destination).
@@ -98,14 +104,14 @@ to your preferred website.
     - Configuration: to change the deck/field settings.
     - Data: to check database entries. 
 3. The Workflow:
-    - OtoConnect will open the browser searching for the word.
+    - OtoConnect will open your browser and search for the word.
     - You *must* download the file **manually**.
     - **Drag and drop** the file into the terminal window.
     - Press **Enter**.
     - The program will update the note and move to the next one.
 4. When there are no more notes with empty audio fields, the program will automatically close.
 
-**NOTE:** You should NOT close Anki while using OtoConnect. This may and will cause errors.
+**NOTE:** You should not close Anki while using OtoConnect as this will cause errors.
 
 ## Database
 
@@ -124,11 +130,8 @@ Stored data includes:
 ## Future Improvements
 
 - Code refactoring.
-- Add the option to automatically open Anki when opening the program.
 - Add the option to quit during configuration updates.
-- Make connection errors stop execution if Anki is not open, instead of trying to connect until it is open. 
 - Add `watchdog` library to eliminate the audio file **drag and drop**.
-
 
 ## LICENSE
 
