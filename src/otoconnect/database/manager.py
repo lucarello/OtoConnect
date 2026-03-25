@@ -7,7 +7,7 @@ import sqlite3
 from typing import Any
 
 from enum import Flag, auto
-from config_manager import Config
+from otoconnect.configuration import Config
 
 type DatabaseEntry = tuple[int, str, str | None, str | None, str]
 

@@ -4,8 +4,8 @@ from enum import Enum, auto
 
 from tabulate import tabulate
 
-from input_handler import get_choice
-from database_manager import QueryFilter, DatabaseHandler
+from otoconnect.cli.input_handler import get_choice
+from otoconnect.database import QueryFilter, DatabaseHandler
 
 
 class QueryOption(Enum):

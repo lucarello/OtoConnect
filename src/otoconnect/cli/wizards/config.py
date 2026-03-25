@@ -3,9 +3,11 @@ Manages user configuration updates, allowing customization of decks and
 audio and word fields.
 """
 
-from anki_client import send_request
-from input_handler import get_choice, clean_file_path, validate_path
-from config_manager import ConfigOption, Config
+from otoconnect.anki.client import send_request
+from otoconnect.configuration import ConfigOption, Config
+from otoconnect.cli.input_handler import (get_choice, 
+                                          clean_file_path, 
+                                          validate_path)
 
 
 def update_handler() -> ConfigOption | None:

@@ -5,8 +5,8 @@ Contains various functions that collect and manage data from Anki.
 import os
 from typing import Any
 
-from anki_client import send_request
-from config_manager import Config
+from otoconnect.anki.client import send_request
+from otoconnect.configuration import Config
 
 
 def get_notes(config_instance: Config) -> list[int]:

@@ -5,12 +5,15 @@ import subprocess
 import webbrowser
 from enum import Enum, auto
 
-import anki_utils
-from input_handler import get_choice, clean_file_path
-from database_manager import DatabaseHandler
-from database_menu import query_handler, show_query_results
-from config_manager import Config
-from config_wizard import update_handler, update_config, get_anki_path
+from otoconnect.anki import utils
+from otoconnect.database import DatabaseHandler
+from otoconnect.configuration import Config
+from otoconnect.cli.input_handler import get_choice, clean_file_path
+from otoconnect.cli.wizards.config import (update_handler, 
+                                           update_config, 
+                                           get_anki_path)
+from otoconnect.cli.menus.database import (query_handler, 
+                                           show_query_results)
 
 
 class Mode(Enum):
@@ -54,12 +57,12 @@ def run_anki(config_instance: Config) -> None:
 
 def populate_database(database_instance: DatabaseHandler, 
                       config_instance: Config) -> None:
-    note_list = anki_utils.get_notes(config_instance)
+    note_list = utils.get_notes(config_instance)
     
     if not note_list:
         return None
     
-    note_info = anki_utils.get_note_info(note_list)
+    note_info = utils.get_note_info(note_list)
     
     database_instance.update_table(note_info)
 
@@ -174,10 +177,10 @@ def main() -> None:
                 print('Storing audio file...')
                 # If the store_audio_file function returns None, the loop continues.
                 # If it returns something different, it stops.
-                storage_result = anki_utils.store_audio_file(file_path, word)
+                storage_result = utils.store_audio_file(file_path, word)
         
         print('Updating audio field on Anki...')
-        anki_utils.update_audio(config, note_id, word)
+        utils.update_audio(config, note_id, word)
         
         audio_file_name = f'{word}.mp3'
         

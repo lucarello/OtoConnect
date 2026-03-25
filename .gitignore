@@ -4,5 +4,5 @@ dist/
 *.py[cod]
 .env
 .vscode/
-config.json
-oto_connect_data.db
+data/*
+!data/.gitkeep
