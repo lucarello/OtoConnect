@@ -8,7 +8,7 @@ from typing import Any
 from requests.exceptions import ConnectionError
 from requests import post
 
-ANKI_CONNECT_URL = 'http://127.0.0.1:8765'
+from otoconnect.constants import ANKI_CONNECT_URL
 
 
 def send_request(payload: dict[str, Any]) -> Any | None:

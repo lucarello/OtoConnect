@@ -5,9 +5,11 @@ database CRUD.
 
 import sqlite3
 from typing import Any
+from pathlib import Path
 
 from enum import Flag, auto
 from otoconnect.configuration import Config
+from otoconnect.constants import DB_FILE
 
 type DatabaseEntry = tuple[int, str, str | None, str | None, str]
 
@@ -25,10 +27,8 @@ class DatabaseHandler:
     Contains a set of methods that allow database manipulation.
     """
     
-    DB_NAME = "oto_connect_data.db"
-    
     def __init__(self, config_instance: Config) -> None:
-        self.con = sqlite3.connect(self.DB_NAME)
+        self.con = sqlite3.connect(DB_FILE)
         self.cur = self.con.cursor()
         self._config = config_instance
     

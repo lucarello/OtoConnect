@@ -6,6 +6,8 @@ manipulation of data from the config.json file.
 import json
 from typing import Any
 from enum import Flag, auto
+from pathlib import Path
+from otoconnect.constants import CONFIG_FILE
 
 
 # Flag class to facilitate the configuration setup
@@ -20,8 +22,8 @@ class ConfigOption(Flag):
 class Config:
     """Stores and maintains information about user configuration."""
     
-    def __init__(self, config_file: str = 'config.json') -> None:
-        self._config_file = config_file
+    def __init__(self) -> None:
+        self._config_file = CONFIG_FILE
         self._data = self._get_config()
         self.is_updated, self.missing_options = self._check_config_state()
     
