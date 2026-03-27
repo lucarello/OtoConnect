@@ -1,8 +1,9 @@
 __pycache__/
-venv/
+.venv/
 dist/
 *.py[cod]
 .env
 .vscode/
 data/*
 !data/.gitkeep
+*.egg-info/

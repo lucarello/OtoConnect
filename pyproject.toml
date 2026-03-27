@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=82.0.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otoconnect"
+version = "1.1.9"
+description = "Audio storing automation for Anki using AnkiConnect API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.33.0",
+    "tabulate>=0.10.0",
+]
+
+[project.scripts]
+otoconnect = "otoconnect.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
