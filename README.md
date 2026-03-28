@@ -38,14 +38,14 @@ If you prefer to run your script via Python (whether using a `.bat` file or not)
 
 1. Cloning the repository:
 Open **Git Bash** in the desired folder and run the following command:
-```git
+```bash
 git clone https://github.com/lucarello/OtoConnect.git
 ```
 
 2. Installing library dependencies:
 Open your **Command Prompt or Terminal** in the cloned repository folder and run the following command:
 ```python
-pip install -r requirements.txt
+pip install -e .
 ```
 
 3. Installing Anki dependencies:
@@ -55,9 +55,9 @@ pip install -r requirements.txt
     - Click on **Ok** and restart your **Anki**.
 
 
-**Note 2:** If you're not using **Git Bash** to clone the repository, search for the correct installation process for your tool.
+**Note 2:** If you're using a different terminal to clone the repository, adjust the process accordingly.
 
-**Note 3:** While it is recommended to use a virtual environment to install the dependencies, you might install them globally as well.
+**Note 3:** While it is recommended to use a virtual environment to install the dependencies, you might either install them globally or use `pipx` as well.
 
 ## Configuration
 
@@ -81,7 +81,7 @@ When running the program for the first time, the wizard will activate allowing y
 By default, the program redirects to **Forvo** with the **Japanese** search tag enabled.
 This is currently hardcoded. If you are running from the source and want to change the language (e.g., to French or Spanish), do the following steps:
 
-1. Open `main.py` in your text editor.
+1. Inside `src/cli/` folder Open `main.py` in your text editor.
 2. Search for the line
 ```python 
 webbrowser.open_new_tab(f'https://forvo.com/word/{word}/#ja')
@@ -98,6 +98,10 @@ to your preferred website.
 
 ## Usage
 
+If you are not using the `.exe` file, you can run OtoConnect through the `otoconnect` command in your preferred **Command Prompt or Terminal**.
+
+**NOTE:** If you are using a **venv**, ensure it is active before trying to run `otoconnect`.
+
 1. Open the Anki app and ensure you are connected to the internet.
 2. Run OtoConnect and choose your mode:
     - Use: to start the audio updating process.
@@ -111,7 +115,7 @@ to your preferred website.
     - The program will update the note and move to the next one.
 4. When there are no more notes with empty audio fields, the program will automatically close.
 
-**NOTE:** You should not close Anki while using OtoConnect as this will cause errors.
+**NOTE 2:** You should not close Anki while using OtoConnect as this will cause errors.
 
 ## Database
 
