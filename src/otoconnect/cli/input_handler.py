@@ -18,10 +18,10 @@ def get_choice(min_choice: int, max_choice: int) -> int | None:
         return choice        
     except ValueError:
         print('You must enter a valid number!\n')
-        return None
     except Exception as e:
         print(f'An unexpected error occurred: {e}\n')
-        return None
+        
+    return None
     
     
 def clean_file_path(raw_file_path: str) -> str:

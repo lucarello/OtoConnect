@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "otoconnect"
-version = "1.1.9"
+version = "1.2.0"
 description = "Audio storing automation for Anki using AnkiConnect API"
 readme = "README.md"
 requires-python = ">=3.12"
