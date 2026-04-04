@@ -20,13 +20,7 @@ The script searches for notes with empty audio fields and automatically opens a 
 
 ## Requirements
 
-### Option 1: Using the executable (.exe)
-If you are using the `.exe` file, there are no technical requirements other than having your **Anki** app open while using the program.
-
-### Option 2: Running from Source
-If you prefer to run your script via Python (whether using a `.bat` file or not), ensure you have the following dependencies:
-
-- **Python 3.x**.
+- **Python 3.12+**.
 - Updated **Anki** desktop app.
 - **AnkiConnect** Anki add-on (Code: `2055492159`).
 - Python `requests` library.
@@ -34,7 +28,23 @@ If you prefer to run your script via Python (whether using a `.bat` file or not)
 
 ## Installation
 
-**Note 1:** The first two steps assume you are running from source. If you are using the `.exe` file, you may skip them.
+### Installing from `.whl`
+
+1. Download the `.whl` file from the latest release.
+2. Open your **Command Prompt or Terminal** and navigate to the folder where the `.whl` file is located.
+```bash
+cd C:\your\path
+```
+(Replace `C:\your\path` with the actual path)
+3. Run the `pip` command:
+```bash
+pip install file.whl
+```
+(Replace `file` with the actual file name)
+
+**Note:** You might use `pipx` as well.
+
+### Installing from Source
 
 1. Cloning the repository:
 Open **Git Bash** in the desired folder and run the following command:
@@ -54,10 +64,7 @@ pip install -e .
     - Click on **Get Add-ons...** and paste the **AnkiConnect** code (`2055492159`).
     - Click on **Ok** and restart your **Anki**.
 
-
-**Note 2:** If you're using a different terminal to clone the repository, adjust the process accordingly.
-
-**Note 3:** While it is recommended to use a virtual environment to install the dependencies, you might either install them globally or use `pipx` as well.
+**Note:** While it is recommended to use a virtual environment to install the dependencies, you might either install them globally as well.
 
 ## Configuration
 
@@ -98,7 +105,7 @@ to your preferred website.
 
 ## Usage
 
-If you are not using the `.exe` file, you can run OtoConnect through the `otoconnect` command in your preferred **Command Prompt or Terminal**.
+If you installed OtoConnect through the `.whl` file, you ou can run `otoconnect` command on your **Command Prompt or Terminal** to start the program. 
 
 **NOTE:** If you are using a **venv**, ensure it is active before trying to run `otoconnect`.
 
@@ -133,9 +140,9 @@ Stored data includes:
 
 ## Future Improvements
 
-- Code refactoring.
-- Add the option to quit during configuration updates.
-- Add `watchdog` library to eliminate the audio file **drag and drop**.
+- [ ] Remove magic numbers.
+- [ ] Add the option to quit during configuration updates.
+- [ ] Add `watchdog` library to eliminate the audio file **drag and drop**.
 
 ## LICENSE
 
