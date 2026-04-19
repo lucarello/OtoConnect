@@ -25,6 +25,7 @@ The script searches for notes with empty audio fields and automatically opens a 
 - **AnkiConnect** Anki add-on (Code: `2055492159`).
 - Python `requests` library.
 - Python `tabulate` library.
+- Python `watchdog` library.
 
 ## Installation
 
@@ -105,7 +106,7 @@ to your preferred website.
 
 ## Usage
 
-If you installed OtoConnect through the `.whl` file, you ou can run `otoconnect` command on your **Command Prompt or Terminal** to start the program. 
+If you installed OtoConnect through the `.whl` file, you can run `otoconnect` command on your **Command Prompt or Terminal** to start the program. 
 
 **NOTE:** If you are using a **venv**, ensure it is active before trying to run `otoconnect`.
 
@@ -117,9 +118,7 @@ If you installed OtoConnect through the `.whl` file, you ou can run `otoconnect`
 3. The Workflow:
     - OtoConnect will open your browser and search for the word.
     - You *must* download the file **manually**.
-    - **Drag and drop** the file into the terminal window.
-    - Press **Enter**.
-    - The program will update the note and move to the next one.
+    - The program will automatically identify the downloaded file, update the note, and move to the next one.
 4. When there are no more notes with empty audio fields, the program will automatically close.
 
 **NOTE 2:** You should not close Anki while using OtoConnect as this will cause errors.
@@ -142,7 +141,9 @@ Stored data includes:
 
 - [ ] Remove magic numbers.
 - [ ] Add the option to quit during configuration updates.
-- [ ] Add `watchdog` library to eliminate the audio file **drag and drop**.
+- [ ] Improve watchdog implementation.
+- [ ] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
+- [X] Add `watchdog` library to eliminate the audio file **drag and drop**.
 
 ## LICENSE
 
