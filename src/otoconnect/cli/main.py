@@ -5,6 +5,9 @@ import subprocess
 import webbrowser
 from enum import Enum, auto
 
+from watchdog.observers import Observer
+
+from otoconnect.monitor.file_monitor import AudioFileHandler
 from otoconnect.anki import utils
 from otoconnect.database import DatabaseHandler
 from otoconnect.configuration import Config
@@ -14,6 +17,7 @@ from otoconnect.cli.wizards.config import (update_handler,
                                            get_anki_path)
 from otoconnect.cli.menus.database import (query_handler, 
                                            show_query_results)
+from otoconnect.constants import DOWNLOAD_FOLDER, AUDIO_EXTENSIONS
 
 
 class Mode(Enum):
@@ -154,39 +158,51 @@ def main() -> None:
         
         db.end_connection()
         return None
-
-    for i, note in enumerate(word_list, 1):
-        print('\n---------------------------')
-        note_id, word = note
-        print(f'Current Word: {word} ({i}/{word_count})\n') #x = current word. y = word_count
-        
-        # Hardcoded to use Forvo and the Japanese search (#ja). The user may 
-        # change the suffix or the entire URL if they find it necessary.
-        webbrowser.open_new_tab(f'https://forvo.com/word/{word}/#ja')
-        
-        storage_result = None
-        
-        # The loop continues until the file is successfully stored
-        while storage_result is None:
-            raw_path = input("Enter the audio file path or drag the file into the terminal: ")
+    
+    observer = Observer()
+    handler = AudioFileHandler(AUDIO_EXTENSIONS)
+    
+    observer.schedule(handler, DOWNLOAD_FOLDER, recursive=False)
+    observer.start()
+    try:
+        for i, note in enumerate(word_list, 1):
+            print('\n---------------------------')
+            note_id, word = note
+            print(f'Current Word: {word} ({i}/{word_count})\n') #x = current word. y = word_count
+            
+            # Hardcoded to use Forvo and the Japanese search (#ja). The user may 
+            # change the suffix or the entire URL if they find it necessary.
+            webbrowser.open_new_tab(f'https://forvo.com/word/{word}/#ja')
+            
+            while not handler.caught_file and observer.is_alive():
+                observer.join(1)
+            
+            raw_path = handler.caught_file
+            print(f'Found audio file: {raw_path}')
+            
             file_path = clean_file_path(raw_path)
+
+            print('Storing audio file...')
+            storage_result = utils.store_audio_file(file_path, word)
             
-            if not file_path:
-                print('The file path cannot be empty\n')
+            if storage_result:
+                print('Updating audio field on Anki...')
+                utils.update_audio(config, note_id, word)
+                
+                audio_file_name = f'{word}.mp3'
+            
+                db.update_entry(audio_file_name, note_id)
+                
+                print('Update complete!\n')
             else:
-                print('Storing audio file...')
-                # If the store_audio_file function returns None, the loop continues.
-                # If it returns something different, it stops.
-                storage_result = utils.store_audio_file(file_path, word)
-        
-        print('Updating audio field on Anki...')
-        utils.update_audio(config, note_id, word)
-        
-        audio_file_name = f'{word}.mp3'
-        
-        db.update_entry(audio_file_name, note_id)
+                print('Could not store audio file.')
+                print('Following to the next word...\n')
             
-        print('Update complete!\n')
+            # Cleans the file path so the loop works properly.
+            handler.caught_file = None
+    finally:
+        observer.stop()
+        observer.join()
     
     print('All done! Every card without audio was updated!')
     
