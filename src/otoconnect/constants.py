@@ -7,7 +7,7 @@ DATA_DIR = HOME_DIR / '.otoconnect'
 CONFIG_FILE = DATA_DIR / 'config.json'
 DB_FILE = DATA_DIR / 'oto_connect_data.db'
 
-DOWNLOAD_FOLDER = Path.home() / 'Downloads'
+DOWNLOAD_FOLDER = HOME_DIR / 'Downloads'
 
 AUDIO_EXTENSIONS = ('.mp3', '.wav', '.ogg')
 
