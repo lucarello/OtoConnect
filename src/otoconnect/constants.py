@@ -1,11 +1,11 @@
 from pathlib import Path
 
-MAIN_DIR = Path(__file__).resolve().parents[2]
+HOME_DIR = Path.home()
 
-DATA_PATH = MAIN_DIR / 'data'
+DATA_DIR = HOME_DIR / '.otoconnect'
 
-CONFIG_FILE = DATA_PATH / 'config.json'
-DB_FILE = DATA_PATH / 'oto_connect_data.db'
+CONFIG_FILE = DATA_DIR / 'config.json'
+DB_FILE = DATA_DIR / 'oto_connect_data.db'
 
 DOWNLOAD_FOLDER = Path.home() / 'Downloads'
 

@@ -5,5 +5,4 @@ dist/
 .env
 .vscode/
 data/*
-!data/.gitkeep
 *.egg-info/

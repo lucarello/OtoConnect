@@ -18,7 +18,7 @@ from otoconnect.cli.wizards.config import (update_handler,
                                            get_anki_path)
 from otoconnect.cli.menus.database import (query_handler, 
                                            show_query_results)
-from otoconnect.constants import DOWNLOAD_FOLDER, AUDIO_EXTENSIONS
+from otoconnect.constants import DATA_DIR, DOWNLOAD_FOLDER, AUDIO_EXTENSIONS
 
 
 class Mode(Enum):
@@ -98,6 +98,9 @@ def mode_selector() -> Mode:
 
 def main() -> None:
     print('--- Welcome to OtoConnect! ---\n')
+    
+    # Creates the main data folder if it doesn't exist.
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     
     config = Config()
     
