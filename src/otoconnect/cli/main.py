@@ -4,6 +4,7 @@ import os
 import subprocess
 import webbrowser
 from enum import Enum, auto
+from pathlib import Path
 
 from watchdog.observers import Observer
 
@@ -197,6 +198,13 @@ def main() -> None:
             else:
                 print('Could not store audio file.')
                 print('Following to the next word...\n')
+            
+            # Tries to remove the file after update.
+            try:
+                # If the file is missing, it continues without errors.
+                Path(file_path).unlink(missing_ok=True)
+            except Exception as e:
+                print(f"An error occurred while trying to delete the file: {e}")
             
             # Cleans the file path so the loop works properly.
             handler.caught_file = None
