@@ -143,7 +143,7 @@ Stored data includes:
 - [ ] Remove magic numbers.
 - [ ] Add the option to quit during configuration updates.
 - [X] Improve watchdog implementation.
-- [ ] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
+- [X] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
 - [X] Add `watchdog` library to eliminate the audio file **drag and drop**.
 
 ## LICENSE
