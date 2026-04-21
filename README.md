@@ -2,7 +2,7 @@
 
 OtoConnect is a simple tool designed to automate the process of attaching native audio to Anki flashcards, integrating with the **AnkiConnect API**.
 
-It uses a **SQLite** database to track processed **Anki** note data and prevent duplicate processing of notes.
+It uses a **SQLite** [database](#database) to track processed **Anki** note data and prevent duplicate processing of notes.
 
 The script searches for notes with empty audio fields and automatically opens a Forvo page so the user can download the corresponding pronunciation audio.
 
@@ -12,6 +12,7 @@ The script searches for notes with empty audio fields and automatically opens a 
 
 - Automatic SQLite database initialization.
 - Automatic Anki app initialization.
+- Automatic audio file recognition.
 - Integration with Anki through AnkiConnect API.
 - HTTP-based communication with Anki.
 - Assisted audio download and storage workflow.
@@ -43,7 +44,7 @@ pip install file.whl
 ```
 (Replace `file` with the actual file name)
 
-**Note:** You might use `pipx` as well.
+**Note:** You can use `pipx` as well.
 
 ### Installing from Source
 
@@ -72,16 +73,34 @@ pip install -e .
 ### Anki Startup
 When first running the program, it will ask if the user wants to open Anki during OtoConnect startup.
 
-### Anki Configuration
+If the user chooses to run Anki on startup, OtoConnect will try to find the Anki path automatically, looking for the following:
+
+- Windows: `C:\Users\YOUR_USER\AppData\Local\Programs\Anki`
+- MacOS: `/Applications/Anki.app/Contents/MacOS/anki`.
+- Linux: `/usr/local/bin/anki`.
+
+If OtoConnect isn't able to find the Anki executable path automatically, it will later ask for the user to insert it manually.
+
+### Downloads Folder
+
+Since the program uses `watchdog` to look for audio files, it is necessary to set a folder for it to observe.
+
+By default, this folder is `Downloads` for Windows, MacOS and Linux. 
+
+If you want OtoConnect to scan another folder or your `Downloads` folder isn't the system's default (such as `C:\Users\YOUR_USER\Downloads` on Windows) you must update it manually through the [Configuration Wizard](#otoconnect-configuration).
+
+### OtoConnect Configuration
 
 The script has a built-in **Configuration Wizard**.
 
-The user can configure the Anki deck and the audio or word fields they want to use.
-
-When running the program for the first time, the wizard will activate allowing you to set up:
+When running the program for the first time, the wizard will activate requiring you to set up:
 - Target Anki Deck.
 - Field name for the Word (Source).
 - Field name for the Audio (Destination).
+- Anki executable path [(if not found automatically)](#anki-startup).
+- Download folder path [(if not found automatically)](#downloads-folder).
+
+Those settings can be changed afterwards through [Configuration Mode](#usage).
 
 **Tip:** If you are running the source code, avoid manually editing the `config.json` to prevent format errors. Use the built-in wizard.
 
@@ -110,13 +129,13 @@ If you installed OtoConnect through the `.whl` file, you can run `otoconnect` co
 
 **NOTE:** If you are using a **venv**, ensure it is active before trying to run `otoconnect`.
 
-1. Open the Anki app and ensure you are connected to the internet.
+1. Open the Anki app [(or let OtoConnect open in automatically)](#anki-startup) and ensure you are connected to the internet.
 2. Run OtoConnect and choose your mode:
     - Use: to start the audio updating process.
     - Configuration: to change the deck/field settings.
     - Data: to check database entries. 
 3. The Workflow:
-    - OtoConnect will open your browser and search for the word.
+    - OtoConnect will open your browser and search for the word in Forvo.
     - You *must* download the file **manually**.
     - The program will automatically identify the downloaded file, update the note, and move to the next one.
     - After updating a note, the program will automatically delete the downloaded audio file.
@@ -142,6 +161,7 @@ Stored data includes:
 
 - [ ] Remove magic numbers.
 - [ ] Add the option to quit during configuration updates.
+- [ ] Add the option to skip words during audio file updates.
 - [X] Improve watchdog implementation.
 - [X] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
 - [X] Add `watchdog` library to eliminate the audio file **drag and drop**.
