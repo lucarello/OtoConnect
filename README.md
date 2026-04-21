@@ -138,6 +138,7 @@ If you installed OtoConnect through the `.whl` file, you can run `otoconnect` co
     - OtoConnect will open your browser and search for the word in Forvo.
     - You *must* download the file **manually**.
     - The program will automatically identify the downloaded file, update the note, and move to the next one.
+        - You can also skip the word by pressing **Ctrl+C**
     - After updating a note, the program will automatically delete the downloaded audio file.
 4. When there are no more notes with empty audio fields, the program will automatically close.
 
@@ -161,7 +162,8 @@ Stored data includes:
 
 - [ ] Remove magic numbers.
 - [ ] Add the option to quit during configuration updates.
-- [ ] Add the option to skip words during audio file updates.
+- [ ] Refactor the code.
+- [X] Add the option to skip words during audio file updates.
 - [X] Improve watchdog implementation.
 - [X] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
 - [X] Add `watchdog` library to eliminate the audio file **drag and drop**.
