@@ -151,8 +151,18 @@ def main() -> None:
             # change the suffix or the entire URL if they find it necessary.
             webbrowser.open_new_tab(f'https://forvo.com/word/{word}/#ja')
             
-            while not handler.caught_file and observer.is_alive():
-                observer.join(1)
+            print('\nDownload the file or press Ctrl+C to skip to the next word.')
+            
+            try:
+                while not handler.caught_file and observer.is_alive():
+                    observer.join(1)
+            except KeyboardInterrupt:
+                print('\nSkipping to the next word...\n')
+                
+                # The caught file is cleared for security.
+                handler.caught_file = None
+                
+                continue
             
             raw_path = handler.caught_file
             print(f'Found audio file: {raw_path}')
