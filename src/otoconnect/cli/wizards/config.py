@@ -26,17 +26,21 @@ def update_handler() -> ConfigOption | None:
         print('[1] Update Deck')
         print('[2] Update Audio Field')
         print('[3] Update Word Field')
-        print('[4] Update All')
-        print('[5] Exit\n')
+        print('[4] Update Anki Path')
+        print('[5] Update Download Folder')
+        print('[6] Update All')
+        print('[7] Exit\n')
         
-        choice = get_choice(1, 5)
+        choice = get_choice(1, 7)
     
     choice_map = {
         1: ConfigOption.DECK,
         2: ConfigOption.AUDIO_FIELD,
         3: ConfigOption.WORD_FIELD,
-        4: ConfigOption.ALL,
-        5: None
+        4: ConfigOption.ANKI_PATH, 
+        5: ConfigOption.DOWNLOAD_FOLDER,
+        6: ConfigOption.ALL,
+        7: None
     }
     
     return choice_map.get(choice)
@@ -72,6 +76,14 @@ def update_config(config_instance: Config, config_options: ConfigOption) -> None
     if ConfigOption.WORD_FIELD in config_options:
         new_word_field = select_field(model, 'word')
         config_instance.word_field = new_word_field
+        
+    if ConfigOption.ANKI_PATH in config_options:
+        new_anki_path = get_path('Anki')
+        config_instance.anki_path = new_anki_path
+    
+    if ConfigOption.DOWNLOAD_FOLDER in config_options:
+        new_download_folder = get_path('Download Folder')
+        config_instance.download_folder = new_download_folder
 
 
 def item_selection(item_list: list[str], prompt_word: str) -> str | None:
@@ -169,17 +181,39 @@ def select_field(model: str, select_mode: str) -> str | None:
     return selected_field
 
 
-def get_anki_path() -> str:
+def get_anki_startup():
     """
-    Prompts the user for the Anki executable path.
+    Gets user preference in whether or not to open Anki
+    during OtoConnect startup.
+    """
+    choice = None
+    
+    while choice is None:
+        print('Would you like to open Anki on OtoConnect startup?\n')
+        print('[1] Yes')
+        print('[2] No\n')
+        
+        choice = get_choice(1, 2)
+        
+    choice_map = {
+        1: True,
+        2: False
+    }
+    
+    return choice_map.get(choice)
+
+
+def get_path(prompt_word: str) -> str:
+    """
+    Prompts the user for a determined path.
     
     The user can either type the path directly or drag and drop
-    the executable file into the terminal.
+    it into the terminal.
     """
     is_path_valid = False
     
     while not is_path_valid:
-        raw_path = input('Please enter your Anki file path: ')
+        raw_path = input(f'Please enter your {prompt_word} path: ')
         clean_path = clean_file_path(raw_path)
         
         is_path_valid = validate_path(clean_path)

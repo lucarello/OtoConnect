@@ -2,7 +2,7 @@
 Contains user input related functions that gives support to other modules.
 """
 
-import os
+from pathlib import Path
 
 def get_choice(min_choice: int, max_choice: int) -> int | None:
     """
@@ -49,8 +49,8 @@ def validate_path(file_path: str) -> bool:
     """
     Checks if the provided file path exists.
     """
-    if not os.path.exists(file_path):
-        print('Error: The file was not found. Please try again.\n')
+    if not Path(file_path).exists():
+        print('Error: The path was not found. Please try again.\n')
         return False
     
     return True

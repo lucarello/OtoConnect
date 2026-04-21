@@ -15,38 +15,17 @@ from otoconnect.configuration import Config
 from otoconnect.cli.input_handler import get_choice, clean_file_path
 from otoconnect.cli.wizards.config import (update_handler, 
                                            update_config, 
-                                           get_anki_path)
+                                           get_path,
+                                           get_anki_startup)
 from otoconnect.cli.menus.database import (query_handler, 
                                            show_query_results)
-from otoconnect.constants import DATA_DIR, DOWNLOAD_FOLDER, AUDIO_EXTENSIONS
+from otoconnect.constants import DATA_DIR, AUDIO_EXTENSIONS
 
 
 class Mode(Enum):
     USE = auto()
     CONFIGURATION = auto()
     DATABASE = auto()
-
-
-def get_anki_startup():
-    """
-    Gets user preference in whether or not to open Anki
-    during OtoConnect startup.
-    """
-    choice = None
-    
-    while choice is None:
-        print('Would you like to open Anki on OtoConnect startup?\n')
-        print('[1] Yes')
-        print('[2] No\n')
-        
-        choice = get_choice(1, 2)
-        
-    choice_map = {
-        1: True,
-        2: False
-    }
-    
-    return choice_map.get(choice)
     
 
 def run_anki(config_instance: Config) -> None:
@@ -109,19 +88,13 @@ def main() -> None:
         
         config.first_time = False 
     
-    if config.startup_anki:
-        if not config.anki_path:
-            print('The anki file path is missing!\n')
-            
-            path = get_anki_path()
-            config.anki_path = path  
-        
-        run_anki(config)
-    
     if not config.is_updated:
         print('There is missing configuration in the config.json file!')
         print('Beginning the configuration update...\n')
         update_config(config, config.missing_options)
+    
+    if config.startup_anki:
+        run_anki(config)
     
     db = DatabaseHandler(config)
     
@@ -166,7 +139,7 @@ def main() -> None:
     observer = Observer()
     handler = AudioFileHandler(AUDIO_EXTENSIONS)
     
-    observer.schedule(handler, DOWNLOAD_FOLDER, recursive=False)
+    observer.schedule(handler, config.download_folder, recursive=False)
     observer.start()
     try:
         for i, note in enumerate(word_list, 1):
