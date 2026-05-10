@@ -20,7 +20,8 @@ class ConfigOption(Flag):
     WORD_FIELD = auto()
     ANKI_PATH = auto()
     DOWNLOAD_FOLDER = auto()
-    ALL = DECK | AUDIO_FIELD | WORD_FIELD | ANKI_PATH | DOWNLOAD_FOLDER
+    ANKI_STARTUP = auto()
+    ALL = DECK | AUDIO_FIELD | WORD_FIELD | ANKI_PATH | DOWNLOAD_FOLDER | ANKI_STARTUP
     
     
 class Config:

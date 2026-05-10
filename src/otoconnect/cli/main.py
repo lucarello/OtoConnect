@@ -14,8 +14,7 @@ from otoconnect.database import DatabaseHandler
 from otoconnect.configuration import Config
 from otoconnect.cli.input_handler import get_choice, clean_file_path
 from otoconnect.cli.wizards.config import (update_handler, 
-                                           update_config, 
-                                           get_path,
+                                           update_config,
                                            get_anki_startup)
 from otoconnect.cli.menus.database import (query_handler, 
                                            show_query_results)

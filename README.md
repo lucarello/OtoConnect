@@ -164,7 +164,7 @@ Stored data includes:
 - [ ] Add the option to quit during configuration updates.
 - [ ] Refactor the code.
 - [X] Add the option to skip words during audio file updates.
-- [X] Improve watchdog implementation.
+- [X] Improve `watchdog` implementation.
 - [X] Correct `config.json` and `oto_connect_data.db` file location, that made the program inoperable.
 - [X] Add `watchdog` library to eliminate the audio file **drag and drop**.
 

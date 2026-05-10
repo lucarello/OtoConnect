@@ -28,10 +28,11 @@ def update_handler() -> ConfigOption | None:
         print('[3] Update Word Field')
         print('[4] Update Anki Path')
         print('[5] Update Download Folder')
-        print('[6] Update All')
-        print('[7] Exit\n')
+        print('[6] Update Anki Startup Option')
+        print('[7] Update All')
+        print('[8] Exit\n')
         
-        choice = get_choice(1, 7)
+        choice = get_choice(1, 8)
     
     choice_map = {
         1: ConfigOption.DECK,
@@ -39,8 +40,9 @@ def update_handler() -> ConfigOption | None:
         3: ConfigOption.WORD_FIELD,
         4: ConfigOption.ANKI_PATH, 
         5: ConfigOption.DOWNLOAD_FOLDER,
-        6: ConfigOption.ALL,
-        7: None
+        6: ConfigOption.ANKI_STARTUP,
+        7: ConfigOption.ALL,
+        8: None
     }
     
     return choice_map.get(choice)
@@ -67,7 +69,7 @@ def update_config(config_instance: Config, config_options: ConfigOption) -> None
         model = select_model()
         
         if not model:
-            return
+            return None
         
     if ConfigOption.AUDIO_FIELD in config_options:
         new_audio_field = select_field(model, 'audio')
@@ -84,6 +86,10 @@ def update_config(config_instance: Config, config_options: ConfigOption) -> None
     if ConfigOption.DOWNLOAD_FOLDER in config_options:
         new_download_folder = get_path('Download Folder')
         config_instance.download_folder = new_download_folder
+        
+    if ConfigOption.ANKI_STARTUP in config_options:
+        open_anki_on_startup = get_anki_startup()
+        config_instance.startup_anki = open_anki_on_startup
 
 
 def item_selection(item_list: list[str], prompt_word: str) -> str | None:
